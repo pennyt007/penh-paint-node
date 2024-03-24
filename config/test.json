@@ -1,0 +1,11 @@
+{
+    "name": "the paint company app - test",
+    "db":{
+        "connectionLimit": 10,
+        "host": "localhost",
+        "port": "3306",
+        "user": "root",
+        "database": "penh-paint-company",
+       "password": "MySQL2024"
+      }
+}

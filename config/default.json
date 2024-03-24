@@ -1,0 +1,25 @@
+{
+    "name": "penhcil school app",
+    "jwtPrivateKey": "",
+    "db-kubernetes":{
+      "connectionLimit": 10,
+      "port": "3306",
+      "user": "root",
+      "database": "penhincontainer",
+      "password": "MySQL2023"
+    },
+    "db-container":{
+      "connectionLimit": 10,
+      "port": "3308",
+      "user": "root",
+      "database": "penhincontainer",
+      "password": "MySQL2023"
+    },
+    "db":{
+      "connectionLimit": 10,
+      "port": "3306",
+      "user": "root",
+      "database": "penh-paint-company",
+      "password": "MySQL2024"
+    }
+}

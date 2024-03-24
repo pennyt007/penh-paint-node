@@ -1,0 +1,4 @@
+{
+    "jwtPrivateKey": "paint_jwtPrivateKey",
+    "db": {"host": "paint_dbHost"}
+}
