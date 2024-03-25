@@ -8,7 +8,7 @@ const router = Router();
 // add and update
 
 // get
-router.get("/",  verifyUserRole("MANAGER"),
+router.get("/",  verifyUserRole("PAINTER"),
   async (req: Request, res: Response) => {
     let inventory = await buildInventory();
     if (inventory.length === 0)

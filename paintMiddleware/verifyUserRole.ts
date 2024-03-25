@@ -17,7 +17,7 @@ export const verifyUserRole = (role: string) => {
 
     if (req.user.user_role === "") return res.status(403).send("Access denied.");
 
-    // if (req.user.user_role === "PRINCIPAL") return next();
+    if (req.user.user_role === "MANAGER") return next();
 
     if (regex.test(allowedRoles)) {
        next();

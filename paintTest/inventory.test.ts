@@ -53,7 +53,7 @@ describe("/api/inventory", () => {
     it("should return 200 if user is valid", async () => {
       const res = await exec();
       expect(res.status).toBe(200);
-      expect(res.body.length).toBe(3);
+      expect(res.body.length).toBe(5);
       expect(
         res.body.some((s: { grid: string }) => s.grid === "inventory")
       ).toBeTruthy();
