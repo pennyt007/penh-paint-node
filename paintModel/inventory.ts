@@ -5,8 +5,59 @@ import { executeDatabaseQuery } from "../paintServices/databaseService";
 // get
 export async function getInventory() {
   const queryName = "getInventory";
-  const queryDetails = `SELECT *
-  FROM inventory`;
+  const queryDetails = `SELECT
+  i.inventory_id,
+  i.quantity,
+  p.name,
+  p.stock_max,
+  p.low_trigger,
+  p.order_trigger,
+  CASE
+    WHEN i.quantity > p.low_trigger THEN p.name
+    ELSE NULL
+  END AS availablestock,
+  CASE
+    WHEN i.quantity <= p.low_trigger THEN p.name
+    ELSE NULL
+  END AS lowstock,
+  CASE
+   WHEN i.quantity = 0 THEN p.name
+    ELSE NULL
+END AS outstock
+  FROM inventory i
+  JOIN product p USING(product_id)`;
+  return await executeDatabaseQuery(queryName, queryDetails);
+}
+
+export async function getJob() {
+  const queryName = "getJob";
+  const queryDetails = `SELECT
+  j.job_id,
+  j.job_number,
+  j.address,
+  j.total_area,
+  j.quantity,
+  p.name,
+  js.description,
+  s.name as painter
+  FROM job j
+  JOIN product p USING(product_id)
+  JOIN job_status js USING(job_status_id)
+  JOIN staff s USING(staff_id)`;
+  return await executeDatabaseQuery(queryName, queryDetails);
+}
+
+export async function getOrder() {
+  const queryName = "getOrder";
+  const queryDetails = `SELECT
+  o.order_id,
+  o.order_number,
+  o.quantity,
+  p.name,
+  os.description
+  FROM inventory_order o
+  JOIN product p USING(product_id)
+  JOIN order_status os USING(order_status_id)`;
   return await executeDatabaseQuery(queryName, queryDetails);
 }
 
@@ -27,12 +78,12 @@ export async function buildInventory() {
   let inventoryHistory = [];
   let inventorySection: inventorySection<any> = {};
   //let processedPopCounter: number = 0;
-  const inventorySections = ["inventory", "inventory1"];
+  const inventorySections = ["inventory", "job", "order"];
 
   for (let a = 1; a < 2; a++){
 
     // fetch each point of progress section
-    const allPromise = Promise.all([getInventory(), getInventory()]);
+    const allPromise = Promise.all([getInventory(), getJob(), getOrder()]);
     try {
       promiseResults = await allPromise;
     } catch {
