@@ -1,5 +1,5 @@
 {
-    "name": "penhcil school app",
+    "name": "the paint company app",
     "jwtPrivateKey": "",
     "db-kubernetes":{
       "connectionLimit": 10,

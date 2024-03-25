@@ -23,9 +23,14 @@ export async function getInventory() {
   CASE
    WHEN i.quantity = 0 THEN p.name
     ELSE NULL
-END AS outstock
+  END AS outstock,
+  CASE
+   WHEN io.order_id is not null THEN p.name
+    ELSE NULL
+  END AS ordered
   FROM inventory i
-  JOIN product p USING(product_id)`;
+  JOIN product p USING(product_id)
+  LEFT OUTER JOIN inventory_order io USING(product_id)`;
   return await executeDatabaseQuery(queryName, queryDetails);
 }
 
@@ -61,6 +66,40 @@ export async function getOrder() {
   return await executeDatabaseQuery(queryName, queryDetails);
 }
 
+export async function getAudit() {
+  const queryName = "getAudit";
+  const queryDetails = `SELECT
+  ia.inventory_audit_id,
+  ia.system_quantity,
+  ia.manual_quantity,
+  ia.notes,
+  DATE_FORMAT(ia.created,'%Y-%m-%d') as created,
+  DATE_FORMAT(ia.completed,'%Y-%m-%d') as completed,
+  p.name
+  FROM inventory_audit ia
+  JOIN inventory i USING(inventory_id)
+  JOIN product p USING(product_id)`;
+  return await executeDatabaseQuery(queryName, queryDetails);
+}
+
+export async function getTransactions() {
+  const queryName = "getAudit";
+  const queryDetails = `SELECT
+  it.inventory_transaction_id,
+  it.quantity,
+  DATE_FORMAT(it.created,'%Y-%m-%d') as created,
+  DATE_FORMAT(it.completed,'%Y-%m-%d') as completed,
+  p.name,
+  j.job_number,
+  io.order_number
+  FROM inventory_transaction it
+  JOIN inventory i USING(inventory_id)
+  JOIN product p USING(product_id)
+  LEFT OUTER JOIN job j USING(job_id)
+  LEFT OUTER JOIN inventory_order io USING(order_id)`;
+  return await executeDatabaseQuery(queryName, queryDetails);
+}
+
 // delete
 
 // build
@@ -78,12 +117,12 @@ export async function buildInventory() {
   let inventoryHistory = [];
   let inventorySection: inventorySection<any> = {};
   //let processedPopCounter: number = 0;
-  const inventorySections = ["inventory", "job", "order"];
+  const inventorySections = ["inventory", "job", "order", "audit", "transact"];
 
   for (let a = 1; a < 2; a++){
 
     // fetch each point of progress section
-    const allPromise = Promise.all([getInventory(), getJob(), getOrder()]);
+    const allPromise = Promise.all([getInventory(), getJob(), getOrder(), getAudit(), getTransactions()]);
     try {
       promiseResults = await allPromise;
     } catch {
